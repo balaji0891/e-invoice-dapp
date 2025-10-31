@@ -1,0 +1,49 @@
+# Dependencies
+node_modules
+
+# Build artifacts
+artifacts
+cache
+dist
+
+# Hardhat
+hardhat.config.js
+contracts
+scripts
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Documentation
+*.md
+!README.md
+
+# Deployment scripts
+deploy.sh
+
+# Testing
+test
+tests
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+
+# IDE
+.vscode
+.idea
+
+# Logs
+*.log
+logs
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp
+temp
+attached_assets

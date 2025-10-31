@@ -4,6 +4,15 @@
 Privacy-preserving decentralized invoice application using Zama's FHE (Fully Homomorphic Encryption) on Ethereum Sepolia testnet. Invoice amounts are encrypted on-chain and can only be decrypted by authorized parties.
 
 ## Recent Changes
+- **October 31, 2025**: Vercel deployment configuration
+  - 🚀 Created vercel.json with optimized build settings
+  - 📝 Added comprehensive VERCEL_DEPLOYMENT.md guide
+  - 🔧 Created deploy-vercel.sh helper script
+  - ✅ Configured proper WASM MIME types for Zama SDK
+  - ✅ Added .vercelignore for cleaner deployments
+  - ✅ Updated UI to show clear "MetaMask Required" screen
+  - 📊 Enhanced debug panel to show MetaMask installation status
+  
 - **October 31, 2025**: Implemented real blockchain wallet connection and ETH payment functionality
   - ✅ Smart contract updated with secure payment validation (exact amount matching)
   - ✅ Real wallet connection with MetaMask on Sepolia testnet
@@ -98,6 +107,8 @@ Privacy-preserving decentralized invoice application using Zama's FHE (Fully Hom
 None specified yet.
 
 ## Deployment
+
+### Smart Contract Deployment (Sepolia)
 Contract must be deployed to Sepolia before frontend use:
 ```bash
 npm run compile
@@ -106,7 +117,24 @@ npm run deploy
 
 Save contract address to `.env` as `VITE_CONTRACT_ADDRESS`.
 
-## Current State - READY FOR TESTING! 🚀
+### Frontend Deployment (Vercel)
+The frontend can be deployed to Vercel for production hosting:
+
+**Quick Deploy:**
+```bash
+./deploy-vercel.sh
+```
+
+**Manual Deploy:**
+1. Push code to Git repository (GitHub/GitLab/Bitbucket)
+2. Import repository at [vercel.com/new](https://vercel.com/new)
+3. Vercel auto-detects Vite configuration from `vercel.json`
+4. Add environment variable: `VITE_CONTRACT_ADDRESS=0x2F23CD241EeB31c87BE0822fEbEDFc9FA7459454`
+5. Deploy!
+
+See `VERCEL_DEPLOYMENT.md` for detailed instructions.
+
+## Current State - READY FOR PRODUCTION! 🚀
 - ✅ Smart contract deployed to Sepolia (0x2F23CD241EeB31c87BE0822fEbEDFc9FA7459454)
 - ✅ Contract address configured in environment
 - ✅ Real wallet connection with MetaMask implemented
@@ -116,7 +144,10 @@ Save contract address to `.env` as `VITE_CONTRACT_ADDRESS`.
 - ✅ Frontend fully implemented with real-time event listening
 - ✅ Beautiful Zama-themed UI with purple-blue gradients
 - ✅ Enhanced invoice cards with modern design and animations
+- ✅ Clear "MetaMask Required" screen for users without wallet
+- ✅ Debug panel shows MetaMask status, contract info, and connection state
 - ✅ Workflow configured and running on port 5000
+- ✅ Vercel deployment ready with optimized configuration
 - ✅ Comprehensive deployment documentation
 - ⚠️ **FHE Note**: Zama SDK has WASM loading issues in Replit environment - app works without encryption (amounts stored unencrypted on-chain)
 
