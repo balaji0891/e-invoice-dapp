@@ -20,17 +20,21 @@ export const useZamaFHE = () => {
       try {
         console.log('Initializing Zama FHEVM...');
         // Dynamically import SDK only when needed
-        const { initFhevm, createInstance } = await import('@zama-fhe/relayer-sdk/web');
-        const { ZAMA_RELAYER_URL, ZAMA_KMS_CONTRACT, ZAMA_ACL_CONTRACT, SEPOLIA_CHAIN_ID } = await import('../utils/constants');
+        const { initFhevm, createInstance } = await import('@zama-fhe/relayer-sdk');
+        const { ZAMA_RELAYER_URL, ZAMA_KMS_CONTRACT, ZAMA_ACL_CONTRACT, ZAMA_VERIFYING_CONTRACT, SEPOLIA_CHAIN_ID } = await import('../utils/constants');
         
         await initFhevm();
 
         const instance = await createInstance({
-          kmsContractAddress: ZAMA_KMS_CONTRACT,
-          aclContractAddress: ZAMA_ACL_CONTRACT,
+          chainId: SEPOLIA_CHAIN_ID,
+          networkUrl: "https://sepolia.public.blastapi.io",
           relayerUrl: ZAMA_RELAYER_URL,
+          gatewayUrl: "https://gateway.sepolia.zama.ai/",
+          aclContractAddress: ZAMA_ACL_CONTRACT,
+          kmsContractAddress: ZAMA_KMS_CONTRACT,
+          verifyingContractAddress: ZAMA_VERIFYING_CONTRACT,
           gatewayChainId: SEPOLIA_CHAIN_ID,
-        } as any); // Use 'as any' to bypass TypeScript type errors
+        });
 
         setFhevmInstance(instance);
         setIsInitialized(true);
