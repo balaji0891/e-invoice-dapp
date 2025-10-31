@@ -4,7 +4,7 @@
   "description": "Privacy-preserving e-Invoice dApp with Zama FHE on Ethereum Sepolia",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0 --port 5000",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "compile": "hardhat compile",
@@ -26,6 +26,7 @@
     "@nomicfoundation/hardhat-ethers": "^3.1.2",
     "@nomicfoundation/hardhat-toolbox": "^6.1.0",
     "@openzeppelin/contracts-confidential": "^0.1.0",
+    "@tailwindcss/postcss": "^4.1.16",
     "@types/node": "^24.9.2",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
