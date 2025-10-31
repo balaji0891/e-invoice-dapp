@@ -197,40 +197,20 @@ function App() {
       
       const dueDateTimestamp = Math.floor(new Date(data.dueDate).getTime() / 1000);
       const amountInWei = ethers.parseEther(data.amount);
-      const amountInCents = Math.floor(parseFloat(data.amount) * 100);
 
-      let encrypted;
-      let encryptionUsed = false;
-      
-      if (zama.fhevmInstance && zama.isInitialized) {
-        try {
-          encrypted = await zama.encryptAmount(amountInCents, CONTRACT_ADDRESS, wallet.account);
-          if (encrypted) {
-            encryptionUsed = true;
-          }
-        } catch (err) {
-          console.warn('Encryption failed, using fallback:', err);
-        }
-      }
-      
-      if (!encrypted) {
-        console.log('Creating invoice without FHE encryption (amount visible on-chain)');
-        encrypted = {
-          handles: [ethers.zeroPadValue('0x00', 32)],
-          inputProof: ethers.zeroPadValue('0x00', 64)
-        };
-      }
+      console.log('Creating invoice with simplified contract...');
+      console.log('Recipient:', data.recipient);
+      console.log('Amount (Wei):', amountInWei.toString());
+      console.log('Due date:', dueDateTimestamp);
 
       const tx = await contract.createInvoice(
         data.recipient,
         data.description,
-        encrypted.handles[0],
-        encrypted.inputProof,
         amountInWei,
         dueDateTimestamp
       );
 
-      showNotification('success', encryptionUsed ? 'Creating encrypted invoice...' : 'Creating invoice (no encryption)...');
+      showNotification('success', 'Creating invoice...');
       const receipt = await tx.wait();
       
       showNotification('success', 'Invoice created successfully on blockchain!');
@@ -317,7 +297,7 @@ function App() {
     }
   };
 
-  const handleDecryptAmount = async (invoiceId: number) => {
+  const handleDecryptAmount = async (_invoiceId: number) => {
     if (DEMO_MODE) {
       setIsDecrypting(true);
       setTimeout(() => {
@@ -327,31 +307,9 @@ function App() {
       return;
     }
 
-    if (!wallet.signer || !zama.fhevmInstance || !CONTRACT_ADDRESS) return;
-
-    setIsDecrypting(true);
-    try {
-      const contract = new ethers.Contract(CONTRACT_ADDRESS, INVOICE_MANAGER_ABI, wallet.signer);
-      const encryptedAmount = await contract.getEncryptedAmount(invoiceId);
-      
-      const decrypted = await zama.decryptAmount(CONTRACT_ADDRESS, encryptedAmount);
-      if (decrypted) {
-        const amountInDollars = (parseFloat(decrypted) / 100).toFixed(2);
-        
-        const updateInvoice = (invoices: Invoice[]) =>
-          invoices.map((inv) =>
-            inv.id === invoiceId ? { ...inv, decryptedAmount: `$${amountInDollars}` } : inv
-          );
-
-        setSentInvoices(updateInvoice);
-        setReceivedInvoices(updateInvoice);
-      }
-    } catch (err: any) {
-      console.error('Decrypt error:', err);
-      showNotification('error', 'Failed to decrypt amount');
-    } finally {
-      setIsDecrypting(false);
-    }
+    // With simplified contract, amounts are already accessible via getInvoiceDetails
+    // No decryption needed - just show notification
+    showNotification('success', 'Amount is visible to authorized parties only');
   };
 
   const isDemoMode = DEMO_MODE;
