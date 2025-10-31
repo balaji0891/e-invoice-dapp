@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { initFhevm, createInstance } from '@zama-fhe/relayer-sdk';
+import { initFhevm, createInstance } from '@zama-fhe/relayer-sdk/web';
 import {
   ZAMA_RELAYER_URL,
   ZAMA_KMS_CONTRACT,
