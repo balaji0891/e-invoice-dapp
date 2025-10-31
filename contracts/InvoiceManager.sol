@@ -146,18 +146,26 @@ contract InvoiceManager {
     }
 
     /**
-     * @dev Pay an invoice (mark as paid)
+     * @dev Pay an invoice by sending ETH to the invoice creator
      * @param _invoiceId ID of the invoice to pay
      */
     function payInvoice(uint256 _invoiceId)
         external
+        payable
         invoiceExists(_invoiceId)
         onlyRecipient(_invoiceId)
         invoicePending(_invoiceId)
     {
+        require(msg.value > 0, "Payment amount must be greater than 0");
+        
         Invoice storage invoice = invoices[_invoiceId];
+        address payable sender = payable(invoice.sender);
+        
         invoice.status = InvoiceStatus.Paid;
         invoice.paidAt = block.timestamp;
+
+        (bool success, ) = sender.call{value: msg.value}("");
+        require(success, "Payment transfer failed");
 
         emit InvoicePaid(_invoiceId, msg.sender, block.timestamp);
     }

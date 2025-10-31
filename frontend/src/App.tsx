@@ -205,7 +205,7 @@ function App() {
     }
   };
 
-  const handlePayInvoice = async (invoiceId: number) => {
+  const handlePayInvoice = async (invoiceId: number, amountInEth?: string) => {
     if (DEMO_MODE) {
       setIsLoading(true);
       showNotification('success', 'Demo: Invoice marked as paid!');
@@ -220,17 +220,20 @@ function App() {
       return;
     }
 
-    if (!wallet.signer || !CONTRACT_ADDRESS) return;
+    if (!wallet.signer || !CONTRACT_ADDRESS || !amountInEth) return;
 
     setIsLoading(true);
     try {
       const contract = new ethers.Contract(CONTRACT_ADDRESS, INVOICE_MANAGER_ABI, wallet.signer);
-      const tx = await contract.payInvoice(invoiceId);
       
-      showNotification('success', 'Marking invoice as paid...');
+      const paymentValue = ethers.parseEther(amountInEth);
+      
+      const tx = await contract.payInvoice(invoiceId, { value: paymentValue });
+      
+      showNotification('success', 'Processing payment...');
       await tx.wait();
       
-      showNotification('success', 'Invoice marked as paid!');
+      showNotification('success', 'Payment successful! Invoice paid.');
       await loadInvoices();
     } catch (err: any) {
       console.error('Pay invoice error:', err);

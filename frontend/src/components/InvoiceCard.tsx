@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Invoice, InvoiceStatus } from '../types';
 import { formatAddress, formatDate, formatDueDate, getStatusText, isOverdue } from '../utils/helpers';
 
 interface InvoiceCardProps {
   invoice: Invoice;
   isSent: boolean;
-  onPay?: (id: number) => void;
+  onPay?: (id: number, amountInEth?: string) => void;
   onCancel?: (id: number) => void;
   onDecrypt?: (id: number) => void;
   isDecrypting?: boolean;
@@ -32,6 +32,8 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
   onDecrypt,
   isDecrypting,
 }) => {
+  const [paymentAmount, setPaymentAmount] = useState('');
+  const [showPaymentInput, setShowPaymentInput] = useState(false);
   const showOverdue = invoice.status === InvoiceStatus.Pending && isOverdue(invoice.dueDate);
 
   return (
@@ -116,19 +118,68 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
       </div>
 
       {invoice.status === InvoiceStatus.Pending && (
-        <div className="flex gap-3 pt-4 border-t-2 border-gray-100">
+        <div className="space-y-3 pt-4 border-t-2 border-gray-100">
           {!isSent && onPay && (
-            <button onClick={() => onPay(invoice.id)} className="btn-success flex-1">
-              <span className="flex items-center justify-center gap-2">
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor">
-                  <path d="M16 0H2C.9 0 0 .9 0 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V2c0-1.1-.9-2-2-2zM7 14L2 9l1.41-1.41L7 11.17l7.59-7.59L16 5l-9 9z"/>
-                </svg>
-                Mark as Paid
-              </span>
-            </button>
+            <>
+              {!showPaymentInput ? (
+                <button 
+                  onClick={() => setShowPaymentInput(true)} 
+                  className="btn-success w-full"
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor">
+                      <path d="M16 0H2C.9 0 0 .9 0 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V2c0-1.1-.9-2-2-2zM7 14L2 9l1.41-1.41L7 11.17l7.59-7.59L16 5l-9 9z"/>
+                    </svg>
+                    Pay Invoice
+                  </span>
+                </button>
+              ) : (
+                <div className="space-y-2 bg-purple-50 p-4 rounded-lg border-2 border-purple-200">
+                  <label className="block text-sm font-semibold text-purple-900">
+                    Payment Amount (ETH)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.001"
+                    min="0"
+                    placeholder="0.01"
+                    value={paymentAmount}
+                    onChange={(e) => setPaymentAmount(e.target.value)}
+                    className="w-full px-4 py-2 border-2 border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => {
+                        if (paymentAmount && parseFloat(paymentAmount) > 0) {
+                          onPay(invoice.id, paymentAmount);
+                          setShowPaymentInput(false);
+                          setPaymentAmount('');
+                        }
+                      }}
+                      disabled={!paymentAmount || parseFloat(paymentAmount) <= 0}
+                      className="btn-success flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Send Payment
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setShowPaymentInput(false);
+                        setPaymentAmount('');
+                      }}
+                      className="btn-secondary flex-1"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  <p className="text-xs text-purple-700">
+                    💡 Enter the amount in ETH to pay to the invoice creator
+                  </p>
+                </div>
+              )}
+            </>
           )}
           {isSent && onCancel && (
-            <button onClick={() => onCancel(invoice.id)} className="btn-danger flex-1">
+            <button onClick={() => onCancel(invoice.id)} className="btn-danger w-full">
               <span className="flex items-center justify-center gap-2">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor">
                   <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"/>
