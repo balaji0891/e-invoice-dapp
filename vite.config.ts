@@ -18,13 +18,32 @@ export default defineConfig({
     port: 5000,
     strictPort: true,
     allowedHosts: true,
+    headers: {
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+    },
+    fs: {
+      allow: ['..'],
+    },
   },
   build: {
     outDir: '../dist',
     emptyOutDir: true,
+    target: 'esnext',
   },
   optimizeDeps: {
-    exclude: ['@zama-fhe/relayer-sdk'],
-    include: [],
+    exclude: [],
+    include: [
+      '@zama-fhe/relayer-sdk/web',
+      'keccak',
+      'secp256k1',
+    ],
+    esbuildOptions: {
+      target: 'esnext',
+    },
   },
+  define: {
+    'global': 'globalThis',
+  },
+  assetsInclude: ['**/*.wasm'],
 });

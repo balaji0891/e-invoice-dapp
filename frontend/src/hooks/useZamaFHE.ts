@@ -19,28 +19,32 @@ export const useZamaFHE = () => {
     const initZama = async () => {
       try {
         console.log('Initializing Zama FHEVM...');
-        // Dynamically import SDK only when needed
-        const { initFhevm, createInstance } = await import('@zama-fhe/relayer-sdk');
-        const { ZAMA_RELAYER_URL, ZAMA_KMS_CONTRACT, ZAMA_ACL_CONTRACT, ZAMA_VERIFYING_CONTRACT, SEPOLIA_CHAIN_ID } = await import('../utils/constants');
         
-        await initFhevm();
+        console.log('Step 1: Importing SDK...');
+        const sdk = await import('@zama-fhe/relayer-sdk/web');
+        console.log('Step 2: SDK imported successfully', Object.keys(sdk));
+        
+        const { initSDK, createInstance, SepoliaConfig } = sdk;
+        
+        console.log('Step 3: Calling initSDK...');
+        await initSDK();
+        console.log('Step 4: initSDK completed');
 
-        const instance = await createInstance({
-          chainId: SEPOLIA_CHAIN_ID,
-          networkUrl: "https://sepolia.public.blastapi.io",
-          relayerUrl: ZAMA_RELAYER_URL,
-          gatewayUrl: "https://gateway.sepolia.zama.ai/",
-          aclContractAddress: ZAMA_ACL_CONTRACT,
-          kmsContractAddress: ZAMA_KMS_CONTRACT,
-          verifyingContractAddress: ZAMA_VERIFYING_CONTRACT,
-          gatewayChainId: SEPOLIA_CHAIN_ID,
-        });
+        console.log('Step 5: Creating instance with SepoliaConfig...');
+        const instance = await createInstance(SepoliaConfig);
+        console.log('Step 6: Instance created successfully');
 
         setFhevmInstance(instance);
         setIsInitialized(true);
         console.log('Zama FHEVM initialized successfully');
       } catch (err: any) {
         console.error('Failed to initialize Zama FHEVM:', err);
+        console.error('Error details:', {
+          message: err?.message,
+          stack: err?.stack,
+          name: err?.name,
+          cause: err?.cause
+        });
         setError(err.message || 'Failed to initialize encryption system');
       }
     };
