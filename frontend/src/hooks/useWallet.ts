@@ -41,33 +41,51 @@ export const useWallet = () => {
   const connectWallet = async () => {
     try {
       setError('');
+      console.log('🔵 Step 1: Checking for MetaMask...');
       
       if (!window.ethereum) {
-        setError('MetaMask is not installed');
+        const errorMsg = 'MetaMask is not installed. Please install MetaMask browser extension.';
+        console.error('❌', errorMsg);
+        setError(errorMsg);
+        alert(errorMsg);
         return;
       }
+
+      console.log('✅ MetaMask detected');
+      console.log('🔵 Step 2: Requesting accounts...');
 
       const accounts = await window.ethereum.request({
         method: 'eth_requestAccounts',
       });
 
+      console.log('✅ Accounts received:', accounts);
+
       if (accounts.length === 0) {
-        setError('No accounts found');
+        const errorMsg = 'No accounts found. Please create or unlock an account in MetaMask.';
+        console.error('❌', errorMsg);
+        setError(errorMsg);
         return;
       }
 
+      console.log('🔵 Step 3: Creating provider and signer...');
       const prov = new ethers.BrowserProvider(window.ethereum);
       const sign = await prov.getSigner();
+      
+      console.log('✅ Provider and signer created');
       
       setProvider(prov);
       setSigner(sign);
       setAccount(accounts[0]);
       setIsConnected(true);
 
+      console.log('🔵 Step 4: Checking network...');
       await checkNetwork(prov);
+      console.log('✅ Wallet connected successfully!');
     } catch (err: any) {
-      console.error('Connection error:', err);
-      setError(err.message || 'Failed to connect wallet');
+      console.error('❌ Connection error:', err);
+      const errorMsg = err.message || err.toString() || 'Failed to connect wallet';
+      setError(errorMsg);
+      alert(`Wallet Connection Error: ${errorMsg}`);
     }
   };
 
