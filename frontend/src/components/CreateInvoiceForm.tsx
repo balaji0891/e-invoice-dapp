@@ -103,7 +103,7 @@ export const CreateInvoiceForm: React.FC<CreateInvoiceFormProps> = ({
             <p className="text-red-600 text-sm mt-1">{errors.amount.message}</p>
           )}
           <p className="text-sm text-gray-500 mt-1">
-            This amount will be encrypted using Zama FHE
+            This amount will be encrypted on the blockchain
           </p>
         </div>
 

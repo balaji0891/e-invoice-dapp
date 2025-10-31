@@ -358,19 +358,16 @@ function App() {
 
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom, #f8f9ff 0%, #f1f5ff 100%)' }}>
-      {/* Stunning Gradient Header with Zama Branding */}
+      {/* Stunning Gradient Header */}
       <header className="gradient-bg shadow-2xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
-              {/* Zama Logo SVG */}
               <div className="flex items-center gap-3">
                 <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <rect width="48" height="48" rx="12" fill="white" fillOpacity="0.15"/>
-                  <path d="M24 10L34 18L24 26L14 18L24 10Z" fill="white" fillOpacity="0.9"/>
-                  <path d="M24 26L34 34L24 42L14 34L24 26Z" fill="white" fillOpacity="0.6"/>
-                  <path d="M10 24L18 32V16L10 24Z" fill="white" fillOpacity="0.5"/>
-                  <path d="M38 24L30 32V16L38 24Z" fill="white" fillOpacity="0.5"/>
+                  <path d="M24 8C24 8 16 12 16 18V26C16 32 24 36 24 36C24 36 32 32 32 26V18C32 12 24 8 24 8Z" fill="white" fillOpacity="0.9" stroke="white" strokeWidth="2"/>
+                  <path d="M20 22L23 25L28 20" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                 </svg>
                 <div>
                   <h1 className="text-3xl font-bold text-white flex items-center gap-3">
@@ -383,7 +380,7 @@ function App() {
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" className="inline">
                       <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z"/>
                     </svg>
-                    Privacy-Preserving Invoices powered by <strong className="font-semibold">Zama FHE</strong>
+                    Privacy-Preserving Invoices with <strong className="font-semibold">Encrypted Amounts</strong>
                   </p>
                   {isDemoMode && (
                     <p className="text-xs text-yellow-200 mt-1">
@@ -566,7 +563,7 @@ function App() {
           <div className="card text-center py-16">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">Welcome to e-Invoice dApp</h2>
             <p className="text-gray-600 mb-8">
-              Create and manage privacy-preserving invoices with encrypted amounts using Zama's FHE technology
+              Create and manage privacy-preserving invoices with fully encrypted amounts on the blockchain
             </p>
             <button onClick={wallet.connectWallet} className="btn-primary text-lg px-8 py-3">
               Connect Wallet to Get Started
