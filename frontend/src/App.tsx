@@ -144,7 +144,16 @@ function App() {
   }, [wallet.provider, wallet.isConnected, wallet.account]);
 
   const handleCreateInvoice = async (data: CreateInvoiceData) => {
+    console.log('=== CREATE INVOICE CALLED ===');
+    console.log('Form data:', data);
+    console.log('DEMO_MODE:', DEMO_MODE);
+    console.log('CONTRACT_ADDRESS:', CONTRACT_ADDRESS);
+    console.log('wallet.signer:', !!wallet.signer);
+    console.log('wallet.account:', wallet.account);
+    console.log('wallet.isConnected:', wallet.isConnected);
+    
     if (DEMO_MODE) {
+      console.log('Running in DEMO MODE');
       setIsLoading(true);
       showNotification('success', 'Demo: Invoice created! Deploy contract for real functionality.');
       setTimeout(() => {
@@ -167,9 +176,16 @@ function App() {
     }
 
     if (!wallet.signer || !CONTRACT_ADDRESS || !wallet.account) {
-      showNotification('error', 'Wallet not ready');
+      console.error('Wallet not ready! Missing:', {
+        signer: !wallet.signer,
+        contractAddress: !CONTRACT_ADDRESS,
+        account: !wallet.account
+      });
+      showNotification('error', 'Wallet not ready - please connect your wallet first');
       return;
     }
+    
+    console.log('Proceeding with blockchain transaction...');
 
     setIsLoading(true);
     try {
