@@ -12,9 +12,10 @@ export const CreateInvoiceForm: React.FC<CreateInvoiceFormProps> = ({
   isLoading,
 }) => {
   const { register, handleSubmit, formState: { errors }, reset } = useForm<CreateInvoiceData>();
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(true);
 
   const onFormSubmit = async (data: CreateInvoiceData) => {
+    console.log('🔥 CreateInvoiceForm submit fired!', data);
     try {
       await onSubmit(data);
       reset();
