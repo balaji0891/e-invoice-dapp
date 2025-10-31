@@ -52,10 +52,11 @@ function App() {
               sender: details[1],
               recipient: details[2],
               description: details[3],
-              dueDate: Number(details[4]),
-              status: details[5] as InvoiceStatus,
-              createdAt: Number(details[6]),
-              paidAt: Number(details[7]),
+              amountInWei: details[4].toString(),
+              dueDate: Number(details[5]),
+              status: details[6] as InvoiceStatus,
+              createdAt: Number(details[7]),
+              paidAt: Number(details[8]),
             });
           } catch (err) {
             console.error(`Failed to load invoice ${id}:`, err);
@@ -182,12 +183,15 @@ function App() {
       const contract = new ethers.Contract(CONTRACT_ADDRESS, INVOICE_MANAGER_ABI, wallet.signer);
       
       const dueDateTimestamp = Math.floor(new Date(data.dueDate).getTime() / 1000);
+      
+      const amountInWei = ethers.parseEther(data.amount);
 
       const tx = await contract.createInvoice(
         data.recipient,
         data.description,
         encrypted.handles[0],
         encrypted.inputProof,
+        amountInWei,
         dueDateTimestamp
       );
 
@@ -205,7 +209,7 @@ function App() {
     }
   };
 
-  const handlePayInvoice = async (invoiceId: number, amountInEth?: string) => {
+  const handlePayInvoice = async (invoiceId: number, amountInWei?: string) => {
     if (DEMO_MODE) {
       setIsLoading(true);
       showNotification('success', 'Demo: Invoice marked as paid!');
@@ -220,15 +224,13 @@ function App() {
       return;
     }
 
-    if (!wallet.signer || !CONTRACT_ADDRESS || !amountInEth) return;
+    if (!wallet.signer || !CONTRACT_ADDRESS || !amountInWei) return;
 
     setIsLoading(true);
     try {
       const contract = new ethers.Contract(CONTRACT_ADDRESS, INVOICE_MANAGER_ABI, wallet.signer);
       
-      const paymentValue = ethers.parseEther(amountInEth);
-      
-      const tx = await contract.payInvoice(invoiceId, { value: paymentValue });
+      const tx = await contract.payInvoice(invoiceId, { value: BigInt(amountInWei) });
       
       showNotification('success', 'Processing payment...');
       await tx.wait();

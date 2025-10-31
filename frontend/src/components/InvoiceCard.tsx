@@ -5,7 +5,7 @@ import { formatAddress, formatDate, formatDueDate, getStatusText, isOverdue } fr
 interface InvoiceCardProps {
   invoice: Invoice;
   isSent: boolean;
-  onPay?: (id: number, amountInEth?: string) => void;
+  onPay?: (id: number, amountInWei?: string) => void;
   onCancel?: (id: number) => void;
   onDecrypt?: (id: number) => void;
   isDecrypting?: boolean;
@@ -32,8 +32,10 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
   onDecrypt,
   isDecrypting,
 }) => {
-  const [paymentAmount, setPaymentAmount] = useState('');
-  const [showPaymentInput, setShowPaymentInput] = useState(false);
+  const requiredPaymentDisplay = invoice.amountInWei 
+    ? `${(parseFloat(invoice.amountInWei) / 1e18).toFixed(6)} ETH`
+    : '';
+  const [showPaymentConfirm, setShowPaymentConfirm] = useState(false);
   const showOverdue = invoice.status === InvoiceStatus.Pending && isOverdue(invoice.dueDate);
 
   return (
@@ -121,9 +123,9 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
         <div className="space-y-3 pt-4 border-t-2 border-gray-100">
           {!isSent && onPay && (
             <>
-              {!showPaymentInput ? (
+              {!showPaymentConfirm ? (
                 <button 
-                  onClick={() => setShowPaymentInput(true)} 
+                  onClick={() => setShowPaymentConfirm(true)} 
                   className="btn-success w-full"
                 >
                   <span className="flex items-center justify-center gap-2">
@@ -134,46 +136,38 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
                   </span>
                 </button>
               ) : (
-                <div className="space-y-2 bg-purple-50 p-4 rounded-lg border-2 border-purple-200">
-                  <label className="block text-sm font-semibold text-purple-900">
-                    Payment Amount (ETH)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.001"
-                    min="0"
-                    placeholder="0.01"
-                    value={paymentAmount}
-                    onChange={(e) => setPaymentAmount(e.target.value)}
-                    className="w-full px-4 py-2 border-2 border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
+                <div className="space-y-3 bg-purple-50 p-4 rounded-lg border-2 border-purple-200">
+                  <div className="text-center">
+                    <p className="text-sm font-semibold text-purple-900 mb-2">
+                      Required Payment Amount
+                    </p>
+                    <div className="text-3xl font-bold text-purple-700 bg-white rounded-lg py-3 px-4 border-2 border-purple-300">
+                      {requiredPaymentDisplay}
+                    </div>
+                    <p className="text-xs text-purple-600 mt-2">
+                      This exact amount will be sent to the invoice creator
+                    </p>
+                  </div>
                   <div className="flex gap-2">
                     <button 
                       onClick={() => {
-                        if (paymentAmount && parseFloat(paymentAmount) > 0) {
-                          onPay(invoice.id, paymentAmount);
-                          setShowPaymentInput(false);
-                          setPaymentAmount('');
+                        if (invoice.amountInWei) {
+                          onPay(invoice.id, invoice.amountInWei);
+                          setShowPaymentConfirm(false);
                         }
                       }}
-                      disabled={!paymentAmount || parseFloat(paymentAmount) <= 0}
+                      disabled={!invoice.amountInWei}
                       className="btn-success flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Send Payment
+                      Confirm & Pay
                     </button>
                     <button 
-                      onClick={() => {
-                        setShowPaymentInput(false);
-                        setPaymentAmount('');
-                      }}
+                      onClick={() => setShowPaymentConfirm(false)}
                       className="btn-secondary flex-1"
                     >
                       Cancel
                     </button>
                   </div>
-                  <p className="text-xs text-purple-700">
-                    💡 Enter the amount in ETH to pay to the invoice creator
-                  </p>
                 </div>
               )}
             </>

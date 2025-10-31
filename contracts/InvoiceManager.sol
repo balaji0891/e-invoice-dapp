@@ -19,6 +19,7 @@ contract InvoiceManager {
         address recipient;
         string description;
         euint64 encryptedAmount;
+        uint256 amountInWei;
         uint256 dueDate;
         InvoiceStatus status;
         uint256 createdAt;
@@ -101,11 +102,13 @@ contract InvoiceManager {
         string memory _description,
         externalEuint64 _encryptedAmount,
         bytes calldata _inputProof,
+        uint256 _amountInWei,
         uint256 _dueDate
     ) external returns (uint256) {
         require(_recipient != address(0), "Invalid recipient address");
         require(_recipient != msg.sender, "Cannot send invoice to yourself");
         require(bytes(_description).length > 0, "Description cannot be empty");
+        require(_amountInWei > 0, "Amount must be greater than 0");
         require(_dueDate > block.timestamp, "Due date must be in the future");
 
         // Convert encrypted input to euint64
@@ -125,6 +128,7 @@ contract InvoiceManager {
         newInvoice.recipient = _recipient;
         newInvoice.description = _description;
         newInvoice.encryptedAmount = amount;
+        newInvoice.amountInWei = _amountInWei;
         newInvoice.dueDate = _dueDate;
         newInvoice.status = InvoiceStatus.Pending;
         newInvoice.createdAt = block.timestamp;
@@ -146,7 +150,7 @@ contract InvoiceManager {
     }
 
     /**
-     * @dev Pay an invoice by sending ETH to the invoice creator
+     * @dev Pay an invoice by sending exact ETH amount to the invoice creator
      * @param _invoiceId ID of the invoice to pay
      */
     function payInvoice(uint256 _invoiceId)
@@ -156,9 +160,11 @@ contract InvoiceManager {
         onlyRecipient(_invoiceId)
         invoicePending(_invoiceId)
     {
+        Invoice storage invoice = invoices[_invoiceId];
+        
+        require(msg.value == invoice.amountInWei, "Payment amount must match invoice amount exactly");
         require(msg.value > 0, "Payment amount must be greater than 0");
         
-        Invoice storage invoice = invoices[_invoiceId];
         address payable sender = payable(invoice.sender);
         
         invoice.status = InvoiceStatus.Paid;
@@ -218,6 +224,7 @@ contract InvoiceManager {
             address sender,
             address recipient,
             string memory description,
+            uint256 amountInWei,
             uint256 dueDate,
             InvoiceStatus status,
             uint256 createdAt,
@@ -230,6 +237,7 @@ contract InvoiceManager {
             invoice.sender,
             invoice.recipient,
             invoice.description,
+            invoice.amountInWei,
             invoice.dueDate,
             invoice.status,
             invoice.createdAt,

@@ -9,6 +9,7 @@ export interface Invoice {
   sender: string;
   recipient: string;
   description: string;
+  amountInWei?: string;
   dueDate: number;
   status: InvoiceStatus;
   createdAt: number;
