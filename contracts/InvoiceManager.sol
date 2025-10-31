@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "@fhevm/solidity/lib/FHE.sol";
-import "@fhevm/solidity/gateway/GatewayCaller.sol";
+import { FHE, euint64, externalEuint64 } from "@fhevm/solidity/lib/FHE.sol";
+import { ZamaConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
 
-contract InvoiceManager is GatewayCaller {
+contract InvoiceManager {
     // Invoice status enum
     enum InvoiceStatus {
         Pending,
@@ -30,6 +30,11 @@ contract InvoiceManager is GatewayCaller {
     mapping(uint256 => Invoice) public invoices;
     mapping(address => uint256[]) public sentInvoices;
     mapping(address => uint256[]) public receivedInvoices;
+
+    // Constructor to configure Zama for Sepolia
+    constructor() {
+        FHE.setCoprocessor(ZamaConfig.getSepoliaConfig());
+    }
 
     // Events
     event InvoiceCreated(
@@ -94,7 +99,7 @@ contract InvoiceManager is GatewayCaller {
     function createInvoice(
         address _recipient,
         string memory _description,
-        einput _encryptedAmount,
+        externalEuint64 _encryptedAmount,
         bytes calldata _inputProof,
         uint256 _dueDate
     ) external returns (uint256) {
@@ -104,7 +109,7 @@ contract InvoiceManager is GatewayCaller {
         require(_dueDate > block.timestamp, "Due date must be in the future");
 
         // Convert encrypted input to euint64
-        euint64 amount = FHE.asEuint64(_encryptedAmount, _inputProof);
+        euint64 amount = FHE.fromExternal(_encryptedAmount, _inputProof);
 
         // Allow both sender and recipient to access the encrypted amount
         FHE.allowThis(amount);

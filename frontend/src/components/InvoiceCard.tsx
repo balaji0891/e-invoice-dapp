@@ -1,6 +1,6 @@
 import React from 'react';
 import { Invoice, InvoiceStatus } from '../types';
-import { formatAddress, formatDate, formatDueDate, getStatusColor, getStatusText, isOverdue } from '../utils/helpers';
+import { formatAddress, formatDate, formatDueDate, getStatusText, isOverdue } from '../utils/helpers';
 
 interface InvoiceCardProps {
   invoice: Invoice;
@@ -10,6 +10,19 @@ interface InvoiceCardProps {
   onDecrypt?: (id: number) => void;
   isDecrypting?: boolean;
 }
+
+const getStatusBadgeClass = (status: InvoiceStatus): string => {
+  switch (status) {
+    case InvoiceStatus.Pending:
+      return 'badge-pending';
+    case InvoiceStatus.Paid:
+      return 'badge-paid';
+    case InvoiceStatus.Cancelled:
+      return 'badge-cancelled';
+    default:
+      return 'badge-pending';
+  }
+};
 
 export const InvoiceCard: React.FC<InvoiceCardProps> = ({
   invoice,
@@ -40,7 +53,7 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
             {isSent ? 'To' : 'From'}: <span className="font-semibold">{formatAddress(isSent ? invoice.recipient : invoice.sender)}</span>
           </p>
         </div>
-        <span className={`badge badge-${invoice.status.toLowerCase()}`}>
+        <span className={`badge ${getStatusBadgeClass(invoice.status)}`}>
           {getStatusText(invoice.status)}
         </span>
       </div>
