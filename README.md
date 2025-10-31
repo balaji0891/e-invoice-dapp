@@ -1,15 +1,30 @@
-# e-Invoice dApp with Zama FHE
+# 🎨 e-Invoice dApp with Zama FHE
 
-A decentralized application for creating privacy-preserving invoices using **Zama's Fully Homomorphic Encryption (FHE)** on Ethereum Sepolia testnet. Invoice amounts are encrypted on-chain and can only be decrypted by authorized parties (sender and recipient).
+A beautiful, privacy-preserving decentralized application for creating invoices using **Zama's Fully Homomorphic Encryption (FHE)** on Ethereum Sepolia testnet. Invoice amounts are encrypted on-chain and can only be decrypted by authorized parties (sender and recipient).
 
-## Features
+![Zama Powered](https://img.shields.io/badge/Powered%20by-Zama%20FHE-7c3aed?style=for-the-badge)
+![Ethereum](https://img.shields.io/badge/Ethereum-Sepolia-627EEA?style=for-the-badge&logo=ethereum)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)
 
-- **Privacy-Preserving**: Invoice amounts encrypted using Zama's FHE technology
-- **Decentralized**: All invoice data stored on Ethereum Sepolia blockchain
-- **Secure Access Control**: Only sender and recipient can decrypt invoice amounts
-- **Real-time Updates**: Live status updates via on-chain events
-- **MetaMask Integration**: Easy wallet connection on Sepolia testnet
-- **Status Management**: Track invoices as Pending, Paid, or Cancelled
+## ✨ Features
+
+### 🔐 Privacy & Security
+- **Fully Homomorphic Encryption**: Invoice amounts encrypted using Zama's cutting-edge FHE technology
+- **On-Chain Privacy**: Encrypted data stored publicly on Ethereum, but only sender/recipient can decrypt
+- **Secure Access Control**: Zero-knowledge proof based authorization
+
+### 🎯 Core Functionality
+- **Create Invoices**: Send encrypted invoices to any Ethereum address
+- **Track Status**: Monitor invoices as Pending, Paid, or Cancelled
+- **Real-time Updates**: Live notifications via on-chain event listeners
+- **Decrypt Amounts**: Authorized parties can decrypt invoice amounts client-side
+
+### 🎨 Modern UI/UX
+- **Zama-Themed Design**: Beautiful purple-blue gradient interface inspired by Zama branding
+- **Responsive Layout**: Works perfectly on desktop and mobile
+- **Demo Mode**: Explore full functionality without blockchain deployment
+- **Smooth Animations**: Delightful micro-interactions and transitions
+- **Intuitive Navigation**: Tab-based interface for easy invoice management
 
 ## Tech Stack
 
@@ -102,6 +117,19 @@ npm run dev
 ```
 
 The app will be available at **http://localhost:5000**
+
+#### Demo Mode
+If you haven't deployed the contract yet, the app automatically runs in **Demo Mode** with:
+- 6 mock invoices (3 sent, 3 received)
+- Full UI preview without blockchain interaction
+- Perfect for testing the interface before deployment
+
+#### Production Mode
+Once you deploy the contract and set `VITE_CONTRACT_ADDRESS`:
+- Full blockchain integration with Sepolia
+- Real FHE encryption/decryption
+- MetaMask wallet connection required
+- Live transaction processing
 
 Open your browser and ensure:
 - MetaMask is installed
