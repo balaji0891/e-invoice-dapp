@@ -1,0 +1,51 @@
+# Prompt: Build e-Invoice dApp with Zama SDK (Ethereum Sepolia Version)
+
+You are a full-stack blockchain developer. Build a decentralized application (dApp) for **online e-invoice generation** (similar to “PieVerse”-style encrypted invoice sending) using the **Zama SDK** on **Ethereum Sepolia testnet**. The application must include:
+
+**Functional requirements**  
+1. Integrate **Ethereum Sepolia** network for all wallet and contract interactions.  
+2. Use **MetaMask** or **WalletConnect** for wallet connection and authentication.  
+3. Merchant (sender) can create an invoice with form fields: recipient wallet address, item/description, encrypted amount, and due date.  
+4. When the merchant clicks **Send Invoice**, the invoice details (including encrypted amount) are stored on-chain via a smart contract.  
+5. The invoice amount field must be encrypted using **Zama SDK’s FHE encryption (e.g., euint64)** so only authorized wallets (sender + receiver) can view or decrypt it.  
+6. The recipient (buyer) receives an **on-chain event notification** and can confirm payment or pay the invoice directly through the UI.  
+7. Implement an **InvoiceManager smart contract** to manage invoices, encryption keys, and payment status (`Pending`, `Paid`, `Cancelled`).  
+8. On the frontend, show:  
+   - **My Invoices** (created by the connected wallet)  
+   - **Received Invoices** (addressed to the connected wallet)  
+   - Decrypt and display amounts privately using the Zama SDK (only for authorized wallets).  
+9. Use **Zama SDK Relayer/SDK** for encryption/decryption of invoice fields:  
+   - Install `npm install @zama-fhe/relayer-sdk`  
+   - Follow integration from [Zama Relayer SDK Docs](https://github.com/zama-ai/relayer-sdk?utm_source=chatgpt.com)  
+10. Include wallet connection logic via **ethers.js** configured for Sepolia (`chainId: 11155111`).  
+11. Use **Hardhat** for smart contract deployment to Sepolia. Include scripts for deployment and interaction.  
+12. Include test scripts for creating, viewing, and paying invoices using mock data.  
+13. Frontend: **React + TypeScript + Vite/Next.js** with:  
+    - Wallet connect modal  
+    - Invoice creation form  
+    - Invoice dashboard (sent/received)  
+    - Real-time updates on invoice status via on-chain events.  
+14. Add environment variables for Sepolia RPC, private keys, and Zama Relayer configuration.  
+15. Store encryption keys securely; do not expose in client code. Use backend or relayer service for secure key operations.  
+
+**Deliverables**  
+- `contracts/InvoiceManager.sol` — Smart contract handling encrypted invoices.  
+- `frontend/` — React app for wallet connect, invoice creation, and listing.  
+- Zama SDK integration for encryption/decryption of invoice data.  
+- `scripts/` — Hardhat scripts for deploy and test on Sepolia.  
+- `README.md` — Full developer docs with setup, deploy, and usage instructions.  
+- Test coverage (unit + integration) for smart contract and UI flow.  
+
+**Prompt to you (AI/dev agent):**  
+“Generate the full project scaffold (smart contract + frontend + Hardhat deployment) for an **e-invoice dApp using Zama SDK** on **Ethereum Sepolia** network. Implement wallet connection (MetaMask), encrypted amount field, invoice creation, payment confirmation, invoice listing (sent/received), and status updates. Include developer documentation (README) for setup and replication.”
+
+**Context / constraints:**  
+- Network: **Ethereum Sepolia Testnet** (`chainId: 11155111`)  
+- Wallets: MetaMask / WalletConnect  
+- SDK: `@zama-fhe/relayer-sdk`  
+- Frameworks: Solidity, Hardhat, React, TypeScript, Ethers.js  
+- Deploy contract on Sepolia via Hardhat.  
+- Maintain privacy for encrypted fields (amount, recipient) using Zama SDK’s FHE types and relayer.  
+- Include full documentation so developers can replicate or extend the solution.  
+
+End of prompt.
