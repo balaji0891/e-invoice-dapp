@@ -27,6 +27,7 @@ export default defineConfig({
     headers: {
       'Cross-Origin-Embedder-Policy': 'require-corp',
       'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
     },
     fs: {
       allow: ['..'],

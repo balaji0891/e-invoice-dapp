@@ -176,19 +176,28 @@ function App() {
       const contract = new ethers.Contract(CONTRACT_ADDRESS, INVOICE_MANAGER_ABI, wallet.signer);
       
       const dueDateTimestamp = Math.floor(new Date(data.dueDate).getTime() / 1000);
-      
       const amountInWei = ethers.parseEther(data.amount);
       const amountInCents = Math.floor(parseFloat(data.amount) * 100);
 
       let encrypted;
+      let encryptionUsed = false;
+      
       if (zama.fhevmInstance && zama.isInitialized) {
-        encrypted = await zama.encryptAmount(amountInCents, CONTRACT_ADDRESS, wallet.account);
+        try {
+          encrypted = await zama.encryptAmount(amountInCents, CONTRACT_ADDRESS, wallet.account);
+          if (encrypted) {
+            encryptionUsed = true;
+          }
+        } catch (err) {
+          console.warn('Encryption failed, using fallback:', err);
+        }
       }
       
       if (!encrypted) {
+        console.log('Creating invoice without FHE encryption (amount visible on-chain)');
         encrypted = {
-          handles: [new Uint8Array(32)],
-          inputProof: new Uint8Array(64)
+          handles: [ethers.zeroPadValue('0x00', 32)],
+          inputProof: ethers.zeroPadValue('0x00', 64)
         };
       }
 
@@ -201,15 +210,17 @@ function App() {
         dueDateTimestamp
       );
 
-      showNotification('success', 'Creating invoice...');
-      await tx.wait();
+      showNotification('success', encryptionUsed ? 'Creating encrypted invoice...' : 'Creating invoice (no encryption)...');
+      const receipt = await tx.wait();
       
-      showNotification('success', 'Invoice created successfully!');
+      showNotification('success', 'Invoice created successfully on blockchain!');
+      console.log('Transaction receipt:', receipt);
       await loadInvoices();
       setActiveTab('sent');
     } catch (err: any) {
       console.error('Create invoice error:', err);
-      showNotification('error', err.message || 'Failed to create invoice');
+      const errorMsg = err.reason || err.message || 'Failed to create invoice';
+      showNotification('error', errorMsg);
     } finally {
       setIsLoading(false);
     }
