@@ -49,17 +49,34 @@ Create a `.env` file in the root directory:
 cp .env.example .env
 ```
 
-Edit `.env` and add:
-- `SEPOLIA_RPC_URL`: Your Alchemy/Infura Sepolia RPC URL
-- `PRIVATE_KEY`: Your wallet private key for deployment
+Edit `.env` and add the following:
 
-### 3. Compile Smart Contracts
+**Required for Contract Deployment:**
+- `SEPOLIA_RPC_URL`: Get a free RPC URL from [Alchemy](https://www.alchemy.com/) or [Infura](https://infura.io/)
+  - Example: `https://eth-sepolia.g.alchemy.com/v2/YOUR_API_KEY`
+- `PRIVATE_KEY`: Your wallet private key for deployment
+  - **Export from MetaMask**: Click Account Details → Export Private Key
+  - **⚠️ Security**: Remove the `0x` prefix if present. Never commit this to version control!
+
+**Required for Frontend:**
+- `VITE_CONTRACT_ADDRESS`: The deployed contract address (set after deployment)
+
+### 3. Get Sepolia Testnet ETH
+
+You need Sepolia ETH to deploy the contract and interact with it:
+- Visit [Sepolia Faucet](https://sepoliafaucet.com/)
+- Or use [Alchemy Sepolia Faucet](https://www.alchemy.com/faucets/ethereum-sepolia)
+- Make sure your deployment wallet has at least 0.05 ETH
+
+### 4. Compile Smart Contracts
 
 ```bash
 npm run compile
 ```
 
-### 4. Deploy to Sepolia
+This compiles the Solidity contracts and generates the artifacts needed for deployment.
+
+### 5. Deploy to Sepolia
 
 Make sure you have Sepolia ETH in your deployment wallet, then:
 
@@ -67,19 +84,29 @@ Make sure you have Sepolia ETH in your deployment wallet, then:
 npm run deploy
 ```
 
-Save the deployed contract address and add it to `.env`:
+After successful deployment, you'll see output like:
+```
+InvoiceManager deployed to: 0x1234567890abcdef...
+```
+
+**Important**: Copy this contract address and add it to your `.env` file:
 
 ```
-VITE_CONTRACT_ADDRESS=0x...
+VITE_CONTRACT_ADDRESS=0x1234567890abcdef...
 ```
 
-### 5. Run the Application
+### 6. Run the Application
 
 ```bash
 npm run dev
 ```
 
-The app will be available at http://localhost:5000
+The app will be available at **http://localhost:5000**
+
+Open your browser and ensure:
+- MetaMask is installed
+- You're connected to Sepolia testnet
+- You have some Sepolia ETH for transaction gas fees
 
 ## Usage Guide
 
@@ -154,25 +181,154 @@ This project uses Zama's protocol for on-chain encryption:
 
 ## Troubleshooting
 
+### Contract Not Deployed Error
+**Symptom**: Frontend shows "Configuration Missing" message
+
+**Solution**: 
+1. Make sure you've deployed the contract: `npm run deploy`
+2. Copy the contract address to `.env` as `VITE_CONTRACT_ADDRESS`
+3. Restart the dev server: `npm run dev`
+
 ### MetaMask Issues
-- Make sure you're on Sepolia testnet
-- Try resetting your MetaMask account if transactions are stuck
+**Issue**: Wallet won't connect
+- Make sure MetaMask is installed in your browser
+- Click "Connect Wallet" and approve the connection in MetaMask
+
+**Issue**: Wrong Network
+- The app will prompt you to switch to Sepolia
+- Click "Switch to Sepolia" button or manually switch in MetaMask
+- Network Name: Sepolia
+- Chain ID: 11155111
+
+**Issue**: Transactions stuck
+- Try resetting your MetaMask account: Settings → Advanced → Reset Account
 
 ### Decryption Fails
-- Ensure you're either the sender or recipient of the invoice
-- Check that Zama's relayer service is available
+**Symptom**: "Failed to decrypt amount" error
+
+**Causes**:
+- You're not the sender or recipient of the invoice
+- Zama's relayer service may be temporarily unavailable
+- Network connectivity issues
+
+**Solution**:
+- Verify you're using the correct wallet (sender or recipient)
+- Wait a few moments and try again
+- Check your internet connection
 
 ### Contract Deployment Fails
-- Verify you have enough Sepolia ETH
-- Check your RPC URL is correct
-- Ensure private key is properly formatted in `.env`
+**Error**: "Insufficient funds"
+- Get more Sepolia ETH from a faucet
+- Ensure you have at least 0.05 ETH
+
+**Error**: "Invalid private key"
+- Check that your `PRIVATE_KEY` in `.env` has no `0x` prefix
+- Verify the key is 64 hexadecimal characters
+
+**Error**: "Network error"
+- Verify your `SEPOLIA_RPC_URL` is correct
+- Try using a different RPC provider (Alchemy or Infura)
+- Check that your API key is valid
+
+### Zama SDK Type Errors
+**Symptom**: TypeScript errors about `@zama-fhe/relayer-sdk`
+
+**Note**: This is expected behavior. The SDK package has incomplete TypeScript definitions but works correctly at runtime. You can safely ignore these LSP/TypeScript warnings.
+
+### Invoice Creation Fails
+**Error**: "Wallet or encryption system not ready"
+- Wait for the Zama encryption system to initialize (shows loading spinner)
+- Ensure you're on the correct network (Sepolia)
+
+**Error**: "Invalid Ethereum address"
+- Check the recipient address is a valid format (starts with 0x, 42 characters)
+- Cannot send invoice to yourself
+
+**Error**: "Due date must be in the future"
+- Select a date that's today or later
+
+## Project Structure
+
+```
+einvoice-dapp-zama/
+├── contracts/
+│   ├── InvoiceManager.sol         # Main smart contract
+│   ├── scripts/
+│   │   └── deploy.js              # Deployment script
+│   └── test/
+│       └── InvoiceManager.test.js # Contract tests
+├── frontend/
+│   └── src/
+│       ├── components/             # React components
+│       │   ├── CreateInvoiceForm.tsx
+│       │   ├── InvoiceCard.tsx
+│       │   ├── InvoiceList.tsx
+│       │   └── WalletConnect.tsx
+│       ├── hooks/                  # Custom React hooks
+│       │   ├── useWallet.ts       # MetaMask integration
+│       │   └── useZamaFHE.ts      # Zama SDK integration
+│       ├── types/                  # TypeScript types
+│       ├── utils/                  # Helper functions
+│       └── App.tsx                 # Main app component
+├── hardhat.config.js               # Hardhat configuration
+├── vite.config.ts                  # Vite configuration
+├── .env.example                    # Environment template
+└── package.json                    # Dependencies & scripts
+```
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server on port 5000 |
+| `npm run build` | Build frontend for production |
+| `npm run compile` | Compile smart contracts |
+| `npm run deploy` | Deploy contracts to Sepolia |
+| `npm test` | Run contract tests |
+
+## Security Best Practices
+
+### For Developers
+- **Never commit `.env` file** - Contains private keys and sensitive data
+- **Use separate wallets** - Don't use your main wallet for testing
+- **Test on Sepolia first** - Always test on testnet before mainnet
+- **Validate inputs** - The contract validates all inputs server-side
+
+### For Users
+- **Verify addresses** - Double-check recipient addresses before sending
+- **Encrypted amounts** - Invoice amounts are encrypted on-chain
+- **Access control** - Only sender and recipient can decrypt amounts
+- **Status tracking** - All invoice status changes are recorded on-chain
+
+## Limitations & Future Enhancements
+
+### Current MVP Limitations
+- Payment is status-only (no automatic fund transfer)
+- Recipients manually mark invoices as "paid"
+- No ETH/token transfer functionality built-in
+
+### Possible Enhancements
+1. **Automatic Payments**: Integrate ETH/ERC20 transfers with amount validation
+2. **Dispute Resolution**: Add dispute mechanism for unpaid invoices
+3. **Multi-signature**: Require multiple approvals for high-value invoices
+4. **Recurring Invoices**: Support for subscription-based payments
+5. **Email Notifications**: Off-chain notifications via email
+6. **Invoice Templates**: Predefined invoice templates
+7. **PDF Export**: Generate PDF invoices from on-chain data
+8. **Analytics Dashboard**: Track payment history and statistics
 
 ## Resources
 
-- [Zama Documentation](https://docs.zama.ai/protocol)
-- [Hardhat Docs](https://hardhat.org/docs)
-- [Sepolia Faucet](https://sepoliafaucet.com/)
-- [MetaMask Setup](https://metamask.io/download/)
+- [Zama Documentation](https://docs.zama.ai/protocol) - FHE encryption guide
+- [Zama Relayer SDK](https://github.com/zama-ai/relayer-sdk) - SDK documentation
+- [Hardhat Docs](https://hardhat.org/docs) - Smart contract development
+- [Sepolia Faucet](https://sepoliafaucet.com/) - Get testnet ETH
+- [Alchemy Faucet](https://www.alchemy.com/faucets/ethereum-sepolia) - Alternative faucet
+- [MetaMask Setup](https://metamask.io/download/) - Wallet installation
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
