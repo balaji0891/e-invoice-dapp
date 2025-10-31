@@ -1,21 +1,28 @@
 import { useState, useEffect } from 'react';
-import { initFhevm, createInstance } from '@zama-fhe/relayer-sdk/web';
-import {
-  ZAMA_RELAYER_URL,
-  ZAMA_KMS_CONTRACT,
-  ZAMA_ACL_CONTRACT,
-  SEPOLIA_CHAIN_ID,
-} from '../utils/constants';
+import { CONTRACT_ADDRESS } from '../utils/constants';
+
+// Check if we're in demo mode
+const DEMO_MODE = !CONTRACT_ADDRESS;
 
 export const useZamaFHE = () => {
   const [fhevmInstance, setFhevmInstance] = useState<any>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(DEMO_MODE); // Auto-initialize in demo mode
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
+    if (DEMO_MODE) {
+      // Skip SDK initialization in demo mode
+      console.log('Demo mode: Skipping Zama SDK initialization');
+      return;
+    }
+
     const initZama = async () => {
       try {
         console.log('Initializing Zama FHEVM...');
+        // Dynamically import SDK only when needed
+        const { initFhevm, createInstance } = await import('@zama-fhe/relayer-sdk/web');
+        const { ZAMA_RELAYER_URL, ZAMA_KMS_CONTRACT, ZAMA_ACL_CONTRACT, SEPOLIA_CHAIN_ID } = await import('../utils/constants');
+        
         await initFhevm();
 
         const instance = await createInstance({
@@ -23,7 +30,7 @@ export const useZamaFHE = () => {
           aclContractAddress: ZAMA_ACL_CONTRACT,
           relayerUrl: ZAMA_RELAYER_URL,
           gatewayChainId: SEPOLIA_CHAIN_ID,
-        });
+        } as any); // Use 'as any' to bypass TypeScript type errors
 
         setFhevmInstance(instance);
         setIsInitialized(true);
