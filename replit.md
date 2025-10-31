@@ -90,16 +90,19 @@ Save contract address to `.env` as `VITE_CONTRACT_ADDRESS`.
 ## Current State
 - ✅ Smart contracts ready for deployment
 - ✅ Frontend fully implemented with real-time event listening
-- ✅ Workflow configured and running on port 5000
+- ✅ Workflow configured and running on port 5000 without errors
 - ✅ All features tested and reviewed
+- ✅ Zama SDK import fixed to use `/web` export path
+- ✅ Comprehensive documentation completed
 - ⚠️ Requires Sepolia RPC URL and private key for contract deployment
-- ⚠️ Note: Zama SDK may have package resolution issues - the SDK is correctly integrated but type definitions are incomplete
+- ⚠️ Note: Zama SDK has incomplete TypeScript definitions - the SDK works correctly at runtime but LSP may show type errors
 
 ## Implementation Notes
 - Payment model: Status-only updates (no automatic fund transfers in MVP)
 - Real-time updates via contract event listeners (InvoiceCreated, InvoicePaid, InvoiceCancelled)
 - Event filtering ensures only relevant invoice updates trigger notifications
 - Encryption/decryption handled client-side using Zama SDK
+- **Zama SDK Import**: Must use `@zama-fhe/relayer-sdk/web` (not the default export) for browser environments
 
 ## Next Steps for Deployment
 1. Set up Sepolia RPC URL (Alchemy/Infura)
