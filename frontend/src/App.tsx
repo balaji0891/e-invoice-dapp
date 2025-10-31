@@ -7,6 +7,7 @@ import { CreateInvoiceForm } from './components/CreateInvoiceForm';
 import { InvoiceList } from './components/InvoiceList';
 import { Invoice, CreateInvoiceData, InvoiceStatus } from './types';
 import { CONTRACT_ADDRESS, INVOICE_MANAGER_ABI } from './utils/constants';
+import { DEMO_MODE, getMockInvoices } from './utils/mockData';
 
 function App() {
   const wallet = useWallet();
@@ -25,6 +26,14 @@ function App() {
   };
 
   const loadInvoices = async () => {
+    if (DEMO_MODE) {
+      // Load mock data in demo mode
+      const mockData = getMockInvoices(wallet.account || '0x1234567890123456789012345678901234567890');
+      setSentInvoices(mockData.sent);
+      setReceivedInvoices(mockData.received);
+      return;
+    }
+
     if (!wallet.isConnected || !wallet.signer || !CONTRACT_ADDRESS) return;
 
     try {
@@ -67,7 +76,9 @@ function App() {
   };
 
   useEffect(() => {
-    if (wallet.isConnected && wallet.isCorrectNetwork) {
+    if (DEMO_MODE) {
+      loadInvoices();
+    } else if (wallet.isConnected && wallet.isCorrectNetwork) {
       loadInvoices();
     }
   }, [wallet.isConnected, wallet.isCorrectNetwork, wallet.account]);
@@ -132,6 +143,28 @@ function App() {
   }, [wallet.provider, wallet.isConnected, wallet.account]);
 
   const handleCreateInvoice = async (data: CreateInvoiceData) => {
+    if (DEMO_MODE) {
+      setIsLoading(true);
+      showNotification('success', 'Demo: Invoice created! Deploy contract for real functionality.');
+      setTimeout(() => {
+        const newInvoice: Invoice = {
+          id: sentInvoices.length + receivedInvoices.length + 1,
+          sender: wallet.account || '0x1234567890123456789012345678901234567890',
+          recipient: data.recipient,
+          description: data.description,
+          dueDate: Math.floor(new Date(data.dueDate).getTime() / 1000),
+          status: InvoiceStatus.Pending,
+          createdAt: Math.floor(Date.now() / 1000),
+          paidAt: 0,
+          decryptedAmount: `$${parseFloat(data.amount).toFixed(2)}`
+        };
+        setSentInvoices(prev => [newInvoice, ...prev]);
+        setActiveTab('sent');
+        setIsLoading(false);
+      }, 1000);
+      return;
+    }
+
     if (!wallet.signer || !zama.fhevmInstance || !CONTRACT_ADDRESS || !wallet.account) {
       showNotification('error', 'Wallet or encryption system not ready');
       return;
@@ -173,6 +206,20 @@ function App() {
   };
 
   const handlePayInvoice = async (invoiceId: number) => {
+    if (DEMO_MODE) {
+      setIsLoading(true);
+      showNotification('success', 'Demo: Invoice marked as paid!');
+      setTimeout(() => {
+        setReceivedInvoices(prev => prev.map(inv => 
+          inv.id === invoiceId 
+            ? { ...inv, status: InvoiceStatus.Paid, paidAt: Math.floor(Date.now() / 1000) }
+            : inv
+        ));
+        setIsLoading(false);
+      }, 800);
+      return;
+    }
+
     if (!wallet.signer || !CONTRACT_ADDRESS) return;
 
     setIsLoading(true);
@@ -194,6 +241,20 @@ function App() {
   };
 
   const handleCancelInvoice = async (invoiceId: number) => {
+    if (DEMO_MODE) {
+      setIsLoading(true);
+      showNotification('success', 'Demo: Invoice cancelled!');
+      setTimeout(() => {
+        setSentInvoices(prev => prev.map(inv => 
+          inv.id === invoiceId 
+            ? { ...inv, status: InvoiceStatus.Cancelled }
+            : inv
+        ));
+        setIsLoading(false);
+      }, 800);
+      return;
+    }
+
     if (!wallet.signer || !CONTRACT_ADDRESS) return;
 
     setIsLoading(true);
@@ -215,6 +276,15 @@ function App() {
   };
 
   const handleDecryptAmount = async (invoiceId: number) => {
+    if (DEMO_MODE) {
+      setIsDecrypting(true);
+      setTimeout(() => {
+        showNotification('success', 'Demo: Amount decrypted! (Already shown in demo mode)');
+        setIsDecrypting(false);
+      }, 500);
+      return;
+    }
+
     if (!wallet.signer || !zama.fhevmInstance || !CONTRACT_ADDRESS) return;
 
     setIsDecrypting(true);
@@ -242,18 +312,7 @@ function App() {
     }
   };
 
-  if (!CONTRACT_ADDRESS) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <div className="card max-w-md text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Configuration Missing</h1>
-          <p className="text-gray-700">
-            Please deploy the smart contract and set VITE_CONTRACT_ADDRESS in your .env file
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const isDemoMode = DEMO_MODE;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -261,18 +320,25 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">e-Invoice dApp</h1>
-              <p className="text-sm text-gray-600">Privacy-Preserving Invoices with Zama FHE</p>
+              <h1 className="text-2xl font-bold text-gray-900">
+                e-Invoice dApp {isDemoMode && <span className="text-sm bg-yellow-100 text-yellow-800 px-2 py-1 rounded ml-2">DEMO MODE</span>}
+              </h1>
+              <p className="text-sm text-gray-600">
+                Privacy-Preserving Invoices with Zama FHE
+                {isDemoMode && <span className="text-yellow-600 ml-2">• Deploy contract for full functionality</span>}
+              </p>
             </div>
-            <WalletConnect
-              account={wallet.account}
-              isConnected={wallet.isConnected}
-              isCorrectNetwork={wallet.isCorrectNetwork}
-              error={wallet.error}
-              onConnect={wallet.connectWallet}
-              onDisconnect={wallet.disconnectWallet}
-              onSwitchNetwork={wallet.switchToSepolia}
-            />
+            {!isDemoMode && (
+              <WalletConnect
+                account={wallet.account}
+                isConnected={wallet.isConnected}
+                isCorrectNetwork={wallet.isCorrectNetwork}
+                error={wallet.error}
+                onConnect={wallet.connectWallet}
+                onDisconnect={wallet.disconnectWallet}
+                onSwitchNetwork={wallet.switchToSepolia}
+              />
+            )}
           </div>
         </div>
       </nav>
@@ -286,7 +352,70 @@ function App() {
       )}
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {!wallet.isConnected ? (
+        {isDemoMode ? (
+          <>
+            <div className="flex gap-4 mb-8">
+              <button
+                onClick={() => setActiveTab('create')}
+                className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                  activeTab === 'create'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                Create Invoice
+              </button>
+              <button
+                onClick={() => setActiveTab('sent')}
+                className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                  activeTab === 'sent'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                My Invoices ({sentInvoices.length})
+              </button>
+              <button
+                onClick={() => setActiveTab('received')}
+                className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                  activeTab === 'received'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                Received ({receivedInvoices.length})
+              </button>
+            </div>
+
+            {activeTab === 'create' && (
+              <CreateInvoiceForm onSubmit={handleCreateInvoice} isLoading={isLoading} />
+            )}
+
+            {activeTab === 'sent' && (
+              <InvoiceList
+                title="My Invoices"
+                invoices={sentInvoices}
+                isSent={true}
+                onCancel={handleCancelInvoice}
+                onDecrypt={handleDecryptAmount}
+                isDecrypting={isDecrypting}
+                emptyMessage="You haven't created any invoices yet"
+              />
+            )}
+
+            {activeTab === 'received' && (
+              <InvoiceList
+                title="Received Invoices"
+                invoices={receivedInvoices}
+                isSent={false}
+                onPay={handlePayInvoice}
+                onDecrypt={handleDecryptAmount}
+                isDecrypting={isDecrypting}
+                emptyMessage="You haven't received any invoices yet"
+              />
+            )}
+          </>
+        ) : !wallet.isConnected ? (
           <div className="card text-center py-16">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">Welcome to e-Invoice dApp</h2>
             <p className="text-gray-600 mb-8">
