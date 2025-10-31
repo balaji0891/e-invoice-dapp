@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { useWallet } from './hooks/useWallet';
 import { useZamaFHE } from './hooks/useZamaFHE';
@@ -33,7 +33,7 @@ function App() {
       const sentIds = await contract.getSentInvoices(wallet.account);
       const receivedIds = await contract.getReceivedInvoices(wallet.account);
 
-      const loadInvoiceDetails = async (ids: bigint[], isSent: boolean) => {
+      const loadInvoiceDetails = async (ids: bigint[]) => {
         const invoices: Invoice[] = [];
         for (const id of ids) {
           try {
@@ -55,8 +55,8 @@ function App() {
         return invoices;
       };
 
-      const sent = await loadInvoiceDetails(sentIds, true);
-      const received = await loadInvoiceDetails(receivedIds, false);
+      const sent = await loadInvoiceDetails(sentIds);
+      const received = await loadInvoiceDetails(receivedIds);
 
       setSentInvoices(sent);
       setReceivedInvoices(received);
@@ -86,7 +86,7 @@ function App() {
       }
     };
 
-    const handleInvoicePaid = async (invoiceId: bigint, payer: string) => {
+    const handleInvoicePaid = async (invoiceId: bigint) => {
       console.log('Invoice paid:', invoiceId.toString());
       try {
         const details = await contract.getInvoiceDetails(invoiceId);

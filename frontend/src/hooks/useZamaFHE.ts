@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { initFhevm, createInstance } from '@zama-fhe/relayer-sdk';
 import {
   ZAMA_RELAYER_URL,
-  ZAMA_VERIFYING_CONTRACT,
   ZAMA_KMS_CONTRACT,
   ZAMA_ACL_CONTRACT,
   SEPOLIA_CHAIN_ID,
