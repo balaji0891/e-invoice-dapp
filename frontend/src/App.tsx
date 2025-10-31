@@ -415,6 +415,12 @@ function App() {
           <div>CONTRACT: <span className="text-blue-300 break-all">{CONTRACT_ADDRESS || 'NOT SET'}</span></div>
           <div>WALLET: <span className={wallet.isConnected ? 'text-green-400' : 'text-red-400'}>{wallet.isConnected ? 'Connected' : 'Not connected'}</span></div>
           <div>NETWORK: <span className={wallet.isCorrectNetwork ? 'text-green-400' : 'text-red-400'}>{wallet.isCorrectNetwork ? 'Sepolia ✓' : 'Wrong network'}</span></div>
+          {wallet.error && (
+            <div className="mt-2 pt-2 border-t border-red-500">
+              <div className="text-red-400 font-bold">Wallet Error:</div>
+              <div className="text-red-300 break-words">{wallet.error}</div>
+            </div>
+          )}
           {lastError && (
             <div className="mt-2 pt-2 border-t border-red-500">
               <div className="text-red-400 font-bold">Last Error:</div>
