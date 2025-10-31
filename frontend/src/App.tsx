@@ -315,18 +315,41 @@ function App() {
   const isDemoMode = DEMO_MODE;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <nav className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom, #f8f9ff 0%, #f1f5ff 100%)' }}>
+      {/* Stunning Gradient Header with Zama Branding */}
+      <header className="gradient-bg shadow-2xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                e-Invoice dApp {isDemoMode && <span className="text-sm bg-yellow-100 text-yellow-800 px-2 py-1 rounded ml-2">DEMO MODE</span>}
-              </h1>
-              <p className="text-sm text-gray-600">
-                Privacy-Preserving Invoices with Zama FHE
-                {isDemoMode && <span className="text-yellow-600 ml-2">• Deploy contract for full functionality</span>}
-              </p>
+            <div className="flex items-center gap-4">
+              {/* Zama Logo SVG */}
+              <div className="flex items-center gap-3">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="48" height="48" rx="12" fill="white" fillOpacity="0.15"/>
+                  <path d="M24 10L34 18L24 26L14 18L24 10Z" fill="white" fillOpacity="0.9"/>
+                  <path d="M24 26L34 34L24 42L14 34L24 26Z" fill="white" fillOpacity="0.6"/>
+                  <path d="M10 24L18 32V16L10 24Z" fill="white" fillOpacity="0.5"/>
+                  <path d="M38 24L30 32V16L38 24Z" fill="white" fillOpacity="0.5"/>
+                </svg>
+                <div>
+                  <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+                    e-Invoice dApp
+                    {isDemoMode && (
+                      <span className="badge badge-demo text-xs">DEMO MODE</span>
+                    )}
+                  </h1>
+                  <p className="text-sm text-white/90 flex items-center gap-2">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" className="inline">
+                      <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z"/>
+                    </svg>
+                    Privacy-Preserving Invoices powered by <strong className="font-semibold">Zama FHE</strong>
+                  </p>
+                  {isDemoMode && (
+                    <p className="text-xs text-yellow-200 mt-1">
+                      💡 Deploy smart contract to Sepolia for full blockchain functionality
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
             {!isDemoMode && (
               <WalletConnect
@@ -341,7 +364,7 @@ function App() {
             )}
           </div>
         </div>
-      </nav>
+      </header>
 
       {notification && (
         <div className={`fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
@@ -354,36 +377,51 @@ function App() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {isDemoMode ? (
           <>
-            <div className="flex gap-4 mb-8">
+            <div className="flex gap-4 mb-8 bg-white rounded-xl p-2 shadow-lg">
               <button
                 onClick={() => setActiveTab('create')}
-                className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex-1 ${
                   activeTab === 'create'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                    ? 'gradient-bg text-white shadow-lg transform scale-105'
+                    : 'text-gray-700 hover:bg-purple-50'
                 }`}
               >
-                Create Invoice
+                <span className="flex items-center justify-center gap-2">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"/>
+                  </svg>
+                  Create Invoice
+                </span>
               </button>
               <button
                 onClick={() => setActiveTab('sent')}
-                className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex-1 ${
                   activeTab === 'sent'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                    ? 'gradient-bg text-white shadow-lg transform scale-105'
+                    : 'text-gray-700 hover:bg-purple-50'
                 }`}
               >
-                My Invoices ({sentInvoices.length})
+                <span className="flex items-center justify-center gap-2">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                  </svg>
+                  My Invoices ({sentInvoices.length})
+                </span>
               </button>
               <button
                 onClick={() => setActiveTab('received')}
-                className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex-1 ${
                   activeTab === 'received'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                    ? 'gradient-bg text-white shadow-lg transform scale-105'
+                    : 'text-gray-700 hover:bg-purple-50'
                 }`}
               >
-                Received ({receivedInvoices.length})
+                <span className="flex items-center justify-center gap-2">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm9 4a1 1 0 10-2 0v6a1 1 0 102 0V7z"/>
+                  </svg>
+                  Received ({receivedInvoices.length})
+                </span>
               </button>
             </div>
 
@@ -440,36 +478,51 @@ function App() {
           </div>
         ) : (
           <>
-            <div className="flex gap-4 mb-8">
+            <div className="flex gap-4 mb-8 bg-white rounded-xl p-2 shadow-lg">
               <button
                 onClick={() => setActiveTab('create')}
-                className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex-1 ${
                   activeTab === 'create'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                    ? 'gradient-bg text-white shadow-lg transform scale-105'
+                    : 'text-gray-700 hover:bg-purple-50'
                 }`}
               >
-                Create Invoice
+                <span className="flex items-center justify-center gap-2">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"/>
+                  </svg>
+                  Create Invoice
+                </span>
               </button>
               <button
                 onClick={() => setActiveTab('sent')}
-                className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex-1 ${
                   activeTab === 'sent'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                    ? 'gradient-bg text-white shadow-lg transform scale-105'
+                    : 'text-gray-700 hover:bg-purple-50'
                 }`}
               >
-                My Invoices ({sentInvoices.length})
+                <span className="flex items-center justify-center gap-2">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                  </svg>
+                  My Invoices ({sentInvoices.length})
+                </span>
               </button>
               <button
                 onClick={() => setActiveTab('received')}
-                className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex-1 ${
                   activeTab === 'received'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                    ? 'gradient-bg text-white shadow-lg transform scale-105'
+                    : 'text-gray-700 hover:bg-purple-50'
                 }`}
               >
-                Received ({receivedInvoices.length})
+                <span className="flex items-center justify-center gap-2">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm9 4a1 1 0 10-2 0v6a1 1 0 102 0V7z"/>
+                  </svg>
+                  Received ({receivedInvoices.length})
+                </span>
               </button>
             </div>
 
