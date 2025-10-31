@@ -518,6 +518,50 @@ function App() {
               />
             )}
           </>
+        ) : !(window as any).ethereum ? (
+          <div className="card text-center py-16">
+            <div className="text-6xl mb-6">🦊</div>
+            <h2 className="text-3xl font-bold text-red-600 mb-4">MetaMask Required</h2>
+            <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
+              This app requires MetaMask to connect to the Ethereum blockchain. 
+              MetaMask is a browser extension that allows you to interact with blockchain applications securely.
+            </p>
+            
+            <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-6 mb-8 max-w-2xl mx-auto text-left">
+              <h3 className="font-bold text-lg mb-3 text-gray-800">📋 Quick Setup Guide:</h3>
+              <ol className="space-y-2 text-gray-700">
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-purple-600">1.</span>
+                  <span>Visit <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer" className="text-purple-600 underline font-semibold">metamask.io/download</a> to install the extension</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-purple-600">2.</span>
+                  <span>Create a new wallet or import an existing one</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-purple-600">3.</span>
+                  <span>Switch to <strong>Sepolia testnet</strong> in MetaMask</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-purple-600">4.</span>
+                  <span>Get free test ETH from <a href="https://sepoliafaucet.com/" target="_blank" rel="noopener noreferrer" className="text-purple-600 underline font-semibold">sepoliafaucet.com</a></span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold text-purple-600">5.</span>
+                  <span>Refresh this page and click "Connect Wallet"</span>
+                </li>
+              </ol>
+            </div>
+
+            <a 
+              href="https://metamask.io/download/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="btn-primary text-lg px-8 py-3 inline-block"
+            >
+              Install MetaMask →
+            </a>
+          </div>
         ) : !wallet.isConnected ? (
           <div className="card text-center py-16">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">Welcome to e-Invoice dApp</h2>
