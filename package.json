@@ -1,0 +1,17 @@
+{
+  "name": "einvoice-dapp-zama",
+  "version": "1.0.0",
+  "description": "Privacy-preserving e-Invoice dApp with Zama FHE on Ethereum Sepolia",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run contracts/scripts/deploy.js --network sepolia"
+  },
+  "keywords": ["blockchain", "invoice", "zama", "fhe", "ethereum", "sepolia"],
+  "author": "",
+  "license": "MIT"
+}
