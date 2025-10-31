@@ -19,9 +19,13 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDecrypting, setIsDecrypting] = useState(false);
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [lastError, setLastError] = useState<string>('');
 
   const showNotification = (type: 'success' | 'error', message: string) => {
     setNotification({ type, message });
+    if (type === 'error') {
+      setLastError(message);
+    }
     setTimeout(() => setNotification(null), 5000);
   };
 
@@ -404,12 +408,19 @@ function App() {
         </div>
       </header>
 
-      <div className="fixed top-20 right-4 px-6 py-4 rounded-lg shadow-2xl z-50 bg-black text-white border-2 border-yellow-400">
+      <div className="fixed top-20 right-4 px-6 py-4 rounded-lg shadow-2xl z-50 bg-black text-white border-2 border-yellow-400 max-w-md">
         <div className="font-bold text-yellow-400 mb-2">⚠️ DEBUG INFO</div>
         <div className="text-xs space-y-1">
           <div>DEMO_MODE: <span className={DEMO_MODE ? 'text-red-400 font-bold' : 'text-green-400 font-bold'}>{String(DEMO_MODE)}</span></div>
-          <div>CONTRACT: <span className="text-blue-300">{CONTRACT_ADDRESS || 'NOT SET'}</span></div>
+          <div>CONTRACT: <span className="text-blue-300 break-all">{CONTRACT_ADDRESS || 'NOT SET'}</span></div>
           <div>WALLET: <span className={wallet.isConnected ? 'text-green-400' : 'text-red-400'}>{wallet.isConnected ? 'Connected' : 'Not connected'}</span></div>
+          <div>NETWORK: <span className={wallet.isCorrectNetwork ? 'text-green-400' : 'text-red-400'}>{wallet.isCorrectNetwork ? 'Sepolia ✓' : 'Wrong network'}</span></div>
+          {lastError && (
+            <div className="mt-2 pt-2 border-t border-red-500">
+              <div className="text-red-400 font-bold">Last Error:</div>
+              <div className="text-red-300 break-words">{lastError}</div>
+            </div>
+          )}
         </div>
       </div>
 
