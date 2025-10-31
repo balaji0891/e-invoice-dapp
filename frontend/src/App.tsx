@@ -413,6 +413,7 @@ function App() {
         <div className="text-xs space-y-1">
           <div>DEMO_MODE: <span className={DEMO_MODE ? 'text-red-400 font-bold' : 'text-green-400 font-bold'}>{String(DEMO_MODE)}</span></div>
           <div>CONTRACT: <span className="text-blue-300 break-all">{CONTRACT_ADDRESS || 'NOT SET'}</span></div>
+          <div>MetaMask: <span className={(window as any).ethereum ? 'text-green-400' : 'text-red-400'}>{(window as any).ethereum ? 'Installed ✓' : 'NOT INSTALLED ❌'}</span></div>
           <div>WALLET: <span className={wallet.isConnected ? 'text-green-400' : 'text-red-400'}>{wallet.isConnected ? 'Connected' : 'Not connected'}</span></div>
           <div>NETWORK: <span className={wallet.isCorrectNetwork ? 'text-green-400' : 'text-red-400'}>{wallet.isCorrectNetwork ? 'Sepolia ✓' : 'Wrong network'}</span></div>
           {wallet.error && (
